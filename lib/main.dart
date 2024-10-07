@@ -145,12 +145,12 @@ class _HomepageState extends State<Homepage> with TickerProviderStateMixin {
 
     animationController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 2),
+      duration: const Duration(seconds: 3),
     );
 
     animationController.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
-        selectPlayerBasedOnAngle(); // Correct player selection logic
+        selectPlayerBasedOnAngle();
         showTruthOrDareDialog();
       }
     });
@@ -161,27 +161,18 @@ class _HomepageState extends State<Homepage> with TickerProviderStateMixin {
       if (animationController.isCompleted) {
         animationController.reset();
       }
-      animationController.duration = const Duration(seconds: 2);
       animationController.forward();
     });
   }
 
   void selectPlayerBasedOnAngle() {
-    double finalRotation = lastPosition % (2 * pi); // Get the final angle
-    double sliceAngle = 2 * pi / widget.players.length;
+    double finalRotation = (lastPosition % (2 * pi)); // Get the final angle
+    double sliceAngle = (2 * pi) / widget.players.length; // Angle per player
 
-    // Find the player based on where the bottle stopped
-    for (int i = 0; i < widget.players.length; i++) {
-      double startAngle = i * sliceAngle;
-      double endAngle = (i + 1) * sliceAngle;
-
-      if (finalRotation >= startAngle && finalRotation < endAngle) {
-        setState(() {
-          selectedPlayerIndex = i;
-        });
-        break;
-      }
-    }
+    // Determine which player corresponds to the final rotation angle
+    setState(() {
+      selectedPlayerIndex = ((finalRotation + sliceAngle / 2) ~/ sliceAngle) % widget.players.length;
+    });
   }
 
   void showTruthOrDareDialog() {
